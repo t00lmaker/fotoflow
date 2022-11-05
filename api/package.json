@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "aws-sdk": "^2.1248.0",
+    "parse-multipart": "^1.0.4"
+  }
+}
