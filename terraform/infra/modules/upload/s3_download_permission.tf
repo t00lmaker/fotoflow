@@ -1,4 +1,3 @@
-
 resource "aws_iam_role" "download_s3_bucket" {
   name = "${var.environment}-s3-download"
 
@@ -10,11 +9,11 @@ resource "aws_iam_role" "download_s3_bucket" {
       {
         Action = "sts:AssumeRole"
         Effect = "Allow"
-        Sid    = ""
         Principal = {
-          Service = "lambda.amazonaws.com"
-        }
-      },
+				  Service = "lambda.amazonaws.com",
+				  AWS = "arn:aws:sts::183768142245:assumed-role/dev-s3-download/api-dev-download" 
+			  }
+      }
     ]
   })
 
@@ -45,7 +44,7 @@ resource "aws_iam_policy" "download-s3-bucket" {
         ]
         Effect   = "Allow"
         Resource = "*"
-      },
+      }
     ]
   })
 }
