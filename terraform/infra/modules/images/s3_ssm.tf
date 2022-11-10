@@ -14,5 +14,5 @@ resource "aws_ssm_parameter" "ssm_upload_role" {
 resource "aws_ssm_parameter" "ssm_download_role" {
   name = "${var.environment}-download-role"
   type = "String"
-  value = aws_iam_role.download_s3_bucket.arn
+  value = aws_iam_role.download_s3.arn
 }

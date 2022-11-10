@@ -1,4 +1,4 @@
-resource "aws_iam_role" "download_s3_bucket" {
+resource "aws_iam_role" "download_s3" {
   name = "${var.environment}-s3-download"
 
   # Terraform's "jsonencode" function converts a
@@ -18,12 +18,12 @@ resource "aws_iam_role" "download_s3_bucket" {
   })
 
   managed_policy_arns = [
-    aws_iam_policy.download-s3-bucket.arn
+    aws_iam_policy.download-s3.arn
   ]
 }
 
-resource "aws_iam_policy" "download-s3-bucket" {
-  name = "${var.environment}-download-s3-bucket"
+resource "aws_iam_policy" "download-s3" {
+  name = "${var.environment}-download"
 
   policy = jsonencode({
     Version = "2012-10-17"
