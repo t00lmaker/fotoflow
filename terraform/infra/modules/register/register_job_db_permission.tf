@@ -33,7 +33,16 @@ resource "aws_iam_policy" "job_db_permission" {
         ]
         Effect   = "Allow"
         Resource = aws_dynamodb_table.jobs.arn
-      }
+      },
+      {
+        Action   = [ 
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents"
+        ]
+        Effect   = "Allow"
+        Resource = "*"
+      },
     ]
   })
 }
