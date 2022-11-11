@@ -51,7 +51,7 @@ functions:
       ROLE: ${ssm:${self:custom.stage}-download-role}
     role: ${ssm:${self:custom.stage}-download-role}
 
-  create_job:
+  create-job:
     handler: create_job.handler
     events:
       - httpApi:
@@ -59,7 +59,17 @@ functions:
           method: POST
     environment:
       JOBS_TABLE: ${ssm:${self:custom.stage}-dynamodb-job-table}
-    role: ${ssm:${self:custom.stage}-job-db-permission}
+    role: ${ssm:${self:custom.stage}-job-db-write-permission}
+
+  get-job:
+    handler: get_job.handler
+    events:
+      - httpApi:
+          path: /jobs
+          method: GET
+    environment:
+      JOBS_TABLE: ${ssm:${self:custom.stage}-dynamodb-job-table}
+    role: ${ssm:${self:custom.stage}-job-db-read-permission}
 
 custom:
   stage: ${opt:stage, self:provider.stage}
