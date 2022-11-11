@@ -1,7 +1,8 @@
-resource "aws_iam_role" "job_db_write_permission" {
-  name = "${var.environment}-job-db-permission"
+resource "aws_iam_role" "images_download" {
+  name = "${var.environment}-images-download"
 
-
+  # Terraform's "jsonencode" function converts a
+  # Terraform expression result to valid JSON syntax.
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -9,7 +10,8 @@ resource "aws_iam_role" "job_db_write_permission" {
         Action = "sts:AssumeRole"
         Effect = "Allow"
         Principal = {
-				  Service = "lambda.amazonaws.com"
+				  Service = "lambda.amazonaws.com",
+				  AWS = "arn:aws:sts::183768142245:assumed-role/dev-s3-download/api-dev-download" 
 			  }
       }
     ]
@@ -17,75 +19,75 @@ resource "aws_iam_role" "job_db_write_permission" {
 
   managed_policy_arns = [
     aws_iam_policy.lambda_execution.arn,
-    aws_iam_policy.job_db_write_permission.arn
+    aws_iam_policy.images_download.arn
   ]
 }
 
-
-resource "aws_iam_policy" "job_db_write_permission" {
-  name = "${var.environment}-job-db-write-permission"
+resource "aws_iam_policy" "images_download" {
+  name = "${var.environment}-images-download"
 
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
       {
         Action   = [ 
-          "dynamodb:PutItem"
+          "s3:GetObject",
+          "s3:GetObjectVersion"
         ]
         Effect   = "Allow"
-        Resource = aws_dynamodb_table.jobs.arn
+        Resource = "*"
       }
     ]
   })
 }
 
 
-resource "aws_iam_role" "job_db_read_permission" {
-  name = "${var.environment}-job-db-read-permission"
 
+resource "aws_iam_role" "images_upload" {
+  name = "${var.environment}-images-upload"
 
+  # Terraform's "jsonencode" function converts a
+  # Terraform expression result to valid JSON syntax.
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
       {
         Action = "sts:AssumeRole"
         Effect = "Allow"
+        Sid    = ""
         Principal = {
-				  Service = "lambda.amazonaws.com"
-			  }
-      }
+          Service = "lambda.amazonaws.com"
+        }
+      },
     ]
   })
 
   managed_policy_arns = [
     aws_iam_policy.lambda_execution.arn,
-    aws_iam_policy.job_db_read_permission.arn
+    aws_iam_policy.images_upload.arn
   ]
 }
 
-resource "aws_iam_policy" "job_db_read_permission" {
-  name = "${var.environment}-job-db-read-permission"
+resource "aws_iam_policy" "images_upload" {
+  name = "${var.environment}-images-upload"
 
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
       {
-        Action   = [
-          "dynamodb:GetItem",
-          "dynamodb:BatchGetItem",
-          "dynamodb:Scan",
-          "dynamodb:Query",
-          "dynamodb:ConditionCheckItem"
+        Action   = [ 
+          "s3:PutObject",
+          "s3:PutObjectAcl"
         ]
         Effect   = "Allow"
-        Resource = aws_dynamodb_table.jobs.arn
+        Resource = "*"
       }
     ]
   })
 }
 
 resource "aws_iam_policy" "lambda_execution" {
-  name = "${var.environment}-lambda-execution"
+  name = "${var.environment}-images-lambda-execution"
 
   policy = jsonencode({
     Version = "2012-10-17"
@@ -98,7 +100,12 @@ resource "aws_iam_policy" "lambda_execution" {
         ]
         Effect   = "Allow"
         Resource = "*"
-      },
+      }
     ]
   })
 }
+
+
+
+
+
