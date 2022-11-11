@@ -1,19 +1,25 @@
 'use strict';
 
-const AWS = require('aws-sdk');
+const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3")
 const parseMultipart = require('parse-multipart');
  
-const BUCKET = process.env.BUCKET;
- 
-const s3 = new AWS.S3();
- 
+const REGION = process.env.AWS_REGION
+const BUCKET = process.env.BUCKET
+
+const s3 = new S3Client({ region: REGION })
+
 module.exports.handler = async (event) => {
 
   console.log(event)
   
   try {
     const { filename, data } = extractFile(event)
-     await s3.putObject({ Bucket: BUCKET, Key: filename, ACL: 'public-read', Body: data }).promise();
+    await   s3.send(new PutObjectCommand({ 
+      Bucket: BUCKET, 
+      Key: filename, 
+      ACL: 'public-read', 
+      Body: data 
+    }))
  
     return {
       statusCode: 200,
